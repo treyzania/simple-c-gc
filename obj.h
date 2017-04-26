@@ -18,6 +18,8 @@ struct oref_t {
 	heap* heap;
 };
 
+#define OREF_EQUAL(a, b) (a.heap == b.heap && a.ptr == b.ptr)
+
 #define TYPE_FLAG_ANONYMOUS (1 << 0) // The name field is NULL.
 
 struct otype_t {

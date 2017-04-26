@@ -8,7 +8,7 @@ void free_object(oref ref) {
 
 }
 
-uint64_t __count_references(oref ref, oref* roots, uint64_t root_cnt) {
+static uint64_t _count_references(oref ref, oref* roots, uint64_t root_cnt) {
 
 	uint64_t cnt = 0;
 	for (int i = 0; i < root_cnt; i++) {
@@ -19,12 +19,12 @@ uint64_t __count_references(oref ref, oref* roots, uint64_t root_cnt) {
 		for (int j = 0; j < t->member_cnt; j++) {
 
 			if (!IS_REFERENCE(roots[i], j)) continue;
-			oref mem = convert_to_oref((void*) (resolve_object(ref) + compute_offset(t, j)), ref.heap);
+			oref m = convert_to_oref((void*) (resolve_object(ref) + compute_offset(t, j)), ref.heap);
 
-			if (mem == ref) {
+			if (OREF_EQUAL(ref, m)) {
 				cnt++;
 			} else {
-				cnt += __count_references(ref, &mem, 1); // Hacky hack.
+				cnt += _count_references(ref, &m, 1); // Hacky hack.
 			}
 
 		}
