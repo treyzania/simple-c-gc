@@ -18,7 +18,7 @@ struct oref_t {
 	heap* heap;
 };
 
-#define TYPE_FLAG_ANONYMOUS (1 << 0)
+#define TYPE_FLAG_ANONYMOUS (1 << 0) // The name field is NULL.
 
 struct otype_t {
 	size_t size;
@@ -33,22 +33,25 @@ struct objheader_t {
 	uint64_t objectflags; // If 0, then just the thing itself.
 };
 
-typedef enum { PRIMITIVE, OBJECT } member_family;
 typedef enum { PRIM_BYTE, PRIM_INT } primtive_type;
+
+#define MEMBER_ISREFERENCE (1 << 0)
+#define PRIM_BYTE_SIZE 1
+#define PRIM_INT_SIZE 4
+
+#define IS_REFERENCE(o, i) (((objheader*) resolve_object(o))->type->members[i].member_flags & MEMBER_ISREFERENCE != 0)
 
 struct memberdef_t {
 	uint64_t member_flags;
-	member_family family;
 	union {
 		primtive_type ptype; // Primitive type
-		struct {
-			otype* type;
-			uint8_t ref_cnt; // Number of asterisks to get the actual object.
-		} otype; // Objects
+		otype* rtype; // Objects
 	} data;
 };
 
 void* resolve_object(oref r);
+oref convert_to_oref(void* o, heap* h);
 otype* get_object_type(oref r);
 
 uint64_t compute_type_size(otype* t);
+uint64_t compute_offset(otype* t, uint32_t fi);

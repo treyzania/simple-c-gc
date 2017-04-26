@@ -1,11 +1,16 @@
-all: obj.o heap.o
+FLAGS=`pkg-config --libs --cflags glib-2.0`
+OPTS=-O3
+
+all: obj.o heap.o gc.o
 
 obj.o:
-	gcc -c obj.c
+	gcc ${OPTS} -c obj.c ${FLAGS}
 
 heap.o:
-	gcc -c heap.c `pkg-config --libs --cflags glib-2.0`
+	gcc ${OPTS} -c heap.c ${FLAGS}
+
+gc.o:
+	gcc ${OPTS} -c gc.c ${FLAGS}
 
 clean:
-	rm *.o
-
+	rm -f *.o
