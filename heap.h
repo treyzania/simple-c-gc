@@ -1,13 +1,12 @@
 #pragma once
 #include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
 
-typedef uint64_t heapsize;
-
 typedef struct {
-	heapsize size;
+	uint64_t size;
 	void* body;
 } heap;
 
-heap* create_heap(heapsize size);
+heap* create_heap(uint64_t size);
 void free_heap(heap* h);
