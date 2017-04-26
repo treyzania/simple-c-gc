@@ -51,4 +51,4 @@ struct memberdef_t {
 void* resolve_object(oref r);
 otype* get_object_type(oref r);
 
-uint64_t compute_type_size(type* t);
+uint64_t compute_type_size(otype* t);
