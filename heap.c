@@ -1,8 +1,7 @@
 #include "heap.h"
 #include <stdlib.h>
-#include <glib.h>
 
-heap* create_heap(uint64_t size) {
+heap* heap_create(uint64_t size) {
 
 	void* b = malloc(size);
 	heap* h = malloc(sizeof(heap));
@@ -12,7 +11,7 @@ heap* create_heap(uint64_t size) {
 
 }
 
-void free_heap(heap* h) {
+void heap_free(heap* h) {
 	free(h->body);
 	free(h);
 }

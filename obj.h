@@ -24,7 +24,6 @@ struct otype_t {
 	size_t size;
 	uint64_t flags;
 	char* name;
-	otype* parent;
 	uint32_t member_cnt;
 	memberdef* members;
 };
@@ -35,12 +34,13 @@ struct objheader_t {
 };
 
 typedef enum { PRIMITIVE, OBJECT } member_family;
+typedef enum { PRIM_BYTE, PRIM_INT } primtive_type;
 
 struct memberdef_t {
 	uint64_t member_flags;
 	member_family family;
 	union {
-		uint8_t ptype; // Primitive type
+		primtive_type ptype; // Primitive type
 		struct {
 			otype* type;
 			uint8_t ref_cnt; // Number of asterisks to get the actual object.
@@ -48,10 +48,7 @@ struct memberdef_t {
 	} data;
 };
 
-oref create_object(heap* h, otype* t);
-void clear_object(oref r);
-
 void* resolve_object(oref r);
 otype* get_object_type(oref r);
 
-void traverse_tree(oref ref);
+uint64_t compute_type_size(type* t);
