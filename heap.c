@@ -1,5 +1,5 @@
-#include "utils.h"
 #include "heap.h"
+#include "utils.c"
 #include <glib.h>
 
 typedef struct {
