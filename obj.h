@@ -1,5 +1,7 @@
 #pragma once
+
 #include <stdint.h>
+
 #include "heap.h"
 
 typedef uint64_t optr;
@@ -29,6 +31,9 @@ struct otype_t {
 	uint32_t member_cnt;
 	memberdef* members;
 };
+
+#define OBJ_NORMAL 0
+#define OBJ_RAW (1 << 0)
 
 struct objheader_t {
 	otype* type;

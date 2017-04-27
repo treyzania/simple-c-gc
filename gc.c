@@ -1,12 +1,10 @@
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+
 #include "gc.h"
-
-oref create_object(otype* t, heap* h) {
-
-}
-
-void free_object(oref ref) {
-
-}
+#include "obj.h"
+#include "heap.h"
 
 static uint64_t _count_references(oref ref, oref* roots, uint64_t root_cnt) {
 
@@ -33,4 +31,26 @@ static uint64_t _count_references(oref ref, oref* roots, uint64_t root_cnt) {
 
 	return cnt;
 
+}
+
+oref create_object(otype* t, heap* h) {
+
+	void* o = heap_malloc(h, t->size);
+	memset(o, 0, t->size);
+
+	// Set up the object header so that we have a reference to the type now.
+	objheader* head = (objheader*) o;
+	head->type = t;
+	head->objectflags = 0;
+
+	// Now to make a reference to it to return.
+	oref ref;
+	ref.heap = h;
+	ref.ptr = o - (void*) h;
+	return ref;
+
+}
+
+void free_object(oref ref) {
+	heap_free(ref.heap, (void*) ref.heap + ref.ptr);
 }
