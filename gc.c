@@ -5,6 +5,7 @@
 #include "gc.h"
 #include "obj.h"
 #include "heap.h"
+#include "utils.c"
 
 static uint64_t _count_references(oref ref, oref* roots, uint64_t root_cnt) {
 
@@ -49,14 +50,39 @@ oref create_object(otype* t, objheap* h) {
 	ref.ptr = o - (void*) (h->mem);
 
 	// Add it to the list of objects in the everything.
-	h->oarray = g_list_prepend(h->oarray, GINT_TO_POINTER(ref.ptr));
+	allocref* a = malloc(sizeof(allocref));
+	a->offset = ref.ptr;
+	a->flags = OA_NORMAL;
+	h->allocs = g_list_prepend(h->allocs, a);
+
+	/*
+	 * We prepend it up there so that short-lived objects end up getting removed
+	 * faster than longer-lived objects, more or less.
+	 */
 
 	return ref;
 
 }
 
 void free_object(oref ref) {
+
+	// Free the object on the heap.
 	heap_free(ref.heap, (void*) ref.heap + ref.ptr);
+
+	// Remove the allocation from the list of allocations.
+	objheap* oh = (objheap*) (ref.heap - FIELD_OFFSET(objheap, mem));
+	GList* l = oh->allocs;
+	while (l != NULL) {
+
+		GList* next = l->next;
+		allocref* aref = (allocref*) l->data;
+		if (aref->offset == ref.ptr) {
+			oh->allocs = g_list_delete_link(oh->allocs, l);
+			free(aref);
+		}
+
+	}
+
 }
 
 objheap* create_objheap(size_t hsize, otype* root) {
@@ -64,6 +90,7 @@ objheap* create_objheap(size_t hsize, otype* root) {
 	objheap* oh = malloc(sizeof(objheap));
 	heap* h = heap_create(hsize);
 	oh->mem = h;
+	oh->allocs = NULL;
 
 	// Now set up the GC root object.
 	oref ref = create_object(root, oh);
@@ -73,10 +100,10 @@ objheap* create_objheap(size_t hsize, otype* root) {
 
 }
 
-void destroy_objheap(objheap* oh) {
+void objheap_objheap(objheap* oh) {
 
 	heap_destroy(oh->mem);
-	g_list_free(oh->oarray);
+	g_list_free(oh->allocs);
 	free(oh);
 
 }

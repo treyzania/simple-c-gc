@@ -4,7 +4,7 @@
 
 #include "heap.h"
 
-typedef uint64_t optr;
+typedef uintptr_t optr;
 
 struct oref_t;
 typedef struct oref_t oref;

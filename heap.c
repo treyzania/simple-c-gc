@@ -3,10 +3,8 @@
 #include <glib.h>
 
 typedef struct {
-
 	GArray* allocs;
 	heap the_heap;
-
 } heapmeta;
 
 typedef struct alloc_t {

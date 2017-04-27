@@ -6,12 +6,17 @@
 #include "heap.h"
 
 typedef struct {
-
-	GList* oarray;
 	heap* mem;
+	GList* allocs;
 	optr root_offset;
-
 } objheap;
+
+typedef struct {
+	optr offset;
+	uint8_t flags;
+} allocref;
+
+#define OA_NORMAL 0
 
 objheap* create_objheap();
 void destroy_objheap(objheap* oh);
