@@ -2,13 +2,14 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <glib.h>
 
 typedef struct {
-	uint64_t size;
-	GArray* allocs;
+	size_t size;
 	void* body;
 } heap;
 
-heap* heap_create(uint64_t size);
-void heap_free(heap* h);
+heap* heap_create(size_t size);
+void heap_destroy(heap* h);
+
+void* heap_malloc(heap* h, size_t s);
+void heap_free(heap* h, void* p);
