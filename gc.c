@@ -107,3 +107,17 @@ void objheap_objheap(objheap* oh) {
 	free(oh);
 
 }
+
+oref copy_object(oref ref, objheap* dest) {
+
+	// We need to get the type multiple times anyways.
+	otype* t = get_object_type(ref);
+
+	// Create the "new" object, then copy the data.
+	oref nr = create_object(t, dest);
+	memcpy(resolve_object(nr), resolve_object(ref), t->size);
+
+	// Then just return the ref to the new object.
+	return nr;
+
+}

@@ -23,3 +23,5 @@ void destroy_objheap(objheap* oh);
 
 oref create_object(otype* t, objheap* h);
 void free_object(oref ref);
+
+oref copy_object(oref ref, heap* dest);
