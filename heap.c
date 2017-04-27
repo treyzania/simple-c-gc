@@ -66,7 +66,7 @@ void* heap_malloc(heap* h, size_t s) {
 				if (a->body + a->size > end) {
 					return NULL;
 				} else {
-					g_array_insert_val(hm->allocs, i, a);
+					hm->allocs = g_array_insert_val(hm->allocs, i, a);
 					return a->body;
 				}
 
@@ -76,7 +76,7 @@ void* heap_malloc(heap* h, size_t s) {
 
 		if (last + a->size < end) {
 			a->body = last;
-			g_array_append_val(hm->allocs, a);
+			hm->allocs = g_array_append_val(hm->allocs, a);
 			return a->body;
 		} else {
 			return NULL;
@@ -87,7 +87,7 @@ void* heap_malloc(heap* h, size_t s) {
 		alloc* first = g_array_index(hm->allocs, alloc*, 0);
 
 		// Since this is the first, we can just make it at the first spot.
-		g_array_append_val(hm->allocs, a);
+		hm->allocs = g_array_append_val(hm->allocs, a);
 		a->body = first->body + first->size;
 		if (a->body + a->size > end) {
 			return NULL;

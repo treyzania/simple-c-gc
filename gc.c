@@ -33,9 +33,9 @@ static uint64_t _count_references(oref ref, oref* roots, uint64_t root_cnt) {
 
 }
 
-oref create_object(otype* t, heap* h) {
+oref create_object(otype* t, objheap* h) {
 
-	void* o = heap_malloc(h, t->size);
+	void* o = heap_malloc(h->mem, t->size);
 	memset(o, 0, t->size);
 
 	// Set up the object header so that we have a reference to the type now.
@@ -45,12 +45,38 @@ oref create_object(otype* t, heap* h) {
 
 	// Now to make a reference to it to return.
 	oref ref;
-	ref.heap = h;
-	ref.ptr = o - (void*) h;
+	ref.heap = h->mem;
+	ref.ptr = o - (void*) (h->mem);
+
+	// Add it to the list of objects in the everything.
+	h->oarray = g_list_prepend(h->oarray, GINT_TO_POINTER(ref.ptr));
+
 	return ref;
 
 }
 
 void free_object(oref ref) {
 	heap_free(ref.heap, (void*) ref.heap + ref.ptr);
+}
+
+objheap* create_objheap(size_t hsize, otype* root) {
+
+	objheap* oh = malloc(sizeof(objheap));
+	heap* h = heap_create(hsize);
+	oh->mem = h;
+
+	// Now set up the GC root object.
+	oref ref = create_object(root, oh);
+	oh->root_offset = ref.ptr;
+
+	return oh;
+
+}
+
+void destroy_objheap(objheap* oh) {
+
+	heap_destroy(oh->mem);
+	g_list_free(oh->oarray);
+	free(oh);
+
 }
